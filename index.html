@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kalkulyator</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
+    background: #17212b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+  }
+
+  .calculator {
+    width: 320px;
+    background: #232e3c;
+    border-radius: 20px;
+    padding: 16px;
+  }
+
+  .display {
+    background: #0f1620;
+    border-radius: 12px;
+    padding: 24px 16px;
+    margin-bottom: 16px;
+    text-align: right;
+    color: #ffffff;
+    font-size: 42px;
+    font-weight: 300;
+    overflow-x: auto;
+    white-space: nowrap;
+    min-height: 60px;
+  }
+
+  .buttons {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+  }
+
+  button {
+    border: none;
+    border-radius: 12px;
+    font-size: 22px;
+    padding: 20px 0;
+    cursor: pointer;
+    color: #ffffff;
+    background: #2b3847;
+  }
+
+  button:active {
+    opacity: 0.7;
+  }
+
+  .op {
+    background: #3390ec;
+  }
+
+  .equals {
+    background: #3390ec;
+    grid-column: span 2;
+  }
+
+  .clear {
+    background: #4a5a6b;
+    color: #ffb4b4;
+  }
+</style>
+</head>
+<body>
+
+<div class="calculator">
+  <div class="display" id="display">0</div>
+  <div class="buttons">
+    <button class="clear" onclick="clearAll()">C</button>
+    <button class="op" onclick="appendOp('/')">÷</button>
+    <button class="op" onclick="appendOp('*')">×</button>
+    <button class="op" onclick="appendOp('-')">−</button>
+
+    <button onclick="appendNum('7')">7</button>
+    <button onclick="appendNum('8')">8</button>
+    <button onclick="appendNum('9')">9</button>
+    <button class="op" onclick="appendOp('+')">+</button>
+
+    <button onclick="appendNum('4')">4</button>
+    <button onclick="appendNum('5')">5</button>
+    <button onclick="appendNum('6')">6</button>
+    <button onclick="appendNum('0')">0</button>
+
+    <button onclick="appendNum('1')">1</button>
+    <button onclick="appendNum('2')">2</button>
+    <button onclick="appendNum('3')">3</button>
+    <button onclick="appendNum('.')">.</button>
+
+    <button class="equals" onclick="calculate()">=</button>
+  </div>
+</div>
+
+<script>
+  let expression = '';
+
+  function updateDisplay() {
+    document.getElementById('display').textContent = expression === '' ? '0' : expression;
+  }
+
+  function appendNum(num) {
+    expression += num;
+    updateDisplay();
+  }
+
+  function appendOp(op) {
+    if (expression === '') return;
+    const lastChar = expression[expression.length - 1];
+    if ('+-*/'.includes(lastChar)) {
+      expression = expression.slice(0, -1) + op;
+    } else {
+      expression += op;
+    }
+    updateDisplay();
+  }
+
+  function clearAll() {
+    expression = '';
+    updateDisplay();
+  }
+
+  function calculate() {
+    try {
+      let result = Function('"use strict"; return (' + expression + ')')();
+      expression = String(result);
+      updateDisplay();
+    } catch (e) {
+      expression = '';
+      document.getElementById('display').textContent = 'Xato';
+    }
+  }
+
+  // Telegram Mini App bilan integratsiya
+  if (window.Telegram && window.Telegram.WebApp) {
+    Telegram.WebApp.ready();
+    Telegram.WebApp.expand();
+  }
+</script>
+
+</body>
+</html>
